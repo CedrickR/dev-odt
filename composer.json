@@ -1,5 +1,12 @@
 {
     "require": {
-        "symfony/console": "^3.2"
+        "symfony/console": "^3.2",
+        "phpoffice/phpword": "^0.13.0",
+        "tecnickcom/tcpdf": "^6.2"
+    },
+    "autoload": {
+        "psr-4": { 
+        	"Odt\\": "src/" 
+        }
     }
 }
