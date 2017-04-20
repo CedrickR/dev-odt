@@ -27,6 +27,11 @@ class CafCommand extends Command
                null,
                InputOption::VALUE_NONE ,
                'Premier test avec un fichier word'
+                )            ->addOption(
+               'test2',
+               null,
+               InputOption::VALUE_NONE ,
+               'Générer un fichier PDF depuis une modele'
                 )
 
         ;
@@ -46,7 +51,9 @@ class CafCommand extends Command
         $output->writeln($titre);
 
         if( $input->getOption('test1')){
-          $this->test1('helloWorld');
+          $this->test1('hello');
+        } elseif ($input->getOption('test2')) {
+          $this->test2('template/Annexe2.docx', 'DepuisModele');
         }
 
     }
@@ -69,21 +76,66 @@ class CafCommand extends Command
               . 'The important thing is not to stop questioning." '
               . '(Albert Einstein)'
       );
+
+
+      $section->addText('Local image without any styles:');
+      $section->addImage('template/img/logo.jpg');
+
       // Saving the document as ODF file...
       $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
       $fileName = $rep  . DIRECTORY_SEPARATOR . $name . '.docx';
       $objWriter->save($fileName);
+      //Save it
+      $xmlWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord , 'PDF');
+      $fileNamePDF = $rep  . DIRECTORY_SEPARATOR . $name . '.pdf';
+      $xmlWriter->save($fileNamePDF); 
+      
+      // Saving the document as HTML file...
+      $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'HTML');
+      $fileNameHtml = $rep  . DIRECTORY_SEPARATOR . $name . '.html';
+      $objWriter->save($fileNameHtml);
 
       //Load temp file
       $phpWord = \PhpOffice\PhpWord\IOFactory::load($fileName); 
+
+
+
+
+
+
+
+    }
+
+    /**
+     *
+     * Générer un pdf depuis un template
+     * @var none
+     * @return none
+     */
+    private function test2($template, $name, $rep='output')
+    {
+      $phpWord = new \PhpOffice\PhpWord\PhpWord();
+
+      //Open template and save it as docx
+      $document = $phpWord->loadTemplate($template);
+      $fileNameTemp = 'temp' . DIRECTORY_SEPARATOR . $name . '.docx';
+      $document->saveAs($fileNameTemp);
+
+      //Load temp file
+      $phpWord = \PhpOffice\PhpWord\IOFactory::load($fileNameTemp); 
+
+      // Saving the document as HTML file...
+      $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'HTML');
+      $fileNameHtml = $rep  . DIRECTORY_SEPARATOR . $name . '.html';
+      $objWriter->save($fileNameHtml);
+
 
       //Save it
       $xmlWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord , 'PDF');
       $fileNamePDF = $rep  . DIRECTORY_SEPARATOR . $name . '.pdf';
       $xmlWriter->save($fileNamePDF); 
-
-
     }
 
 
+    
 }

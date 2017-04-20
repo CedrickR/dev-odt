@@ -12,8 +12,25 @@ use Odt\Command\CafCommand;
 
 $app = new Application('Application CLI CAF', '0.1.0');
 
+use Silex\Provider\MonologServiceProvider;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
+
+$app->register(new MonologServiceProvider(), [
+    'monolog.logfile' => 'log/file.log',
+]);
+
+//extend monolog
+$app->extend('monolog', function ($monolog, $app) {
+    $monolog->pushHandler(new StreamHandler('/log/other.log', Logger::DEBUG));
+    return $monolog;
+});
+
 $app->addCommands(array(
 	new CafCommand()
 
 ));
+
+
+
 $app->run();
